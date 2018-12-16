@@ -1,4 +1,4 @@
-# this file was created by Chris Cozort
+# this file was created by Charlie Fezell
 # Sources: goo.gl/2KMivS 
 # now available in github
 
@@ -11,18 +11,20 @@ Add new gameplay elements as height increases - "death" platforms? Different ene
 Change many of the sprites
 
 **********Bugs
-when you get launched by powerup or head jump player sometimes snaps to platform abruptly 
-happens when hitting jump during power up boost
+Hitbox area of 'new' platforms is the same as the hitbox of the larger platforms
+Jump powerups spawning on every single platform
 
 **********Gameplay fixes
-Platform randomness leaves player in limbo for extended periods
-Lower spawn location so player can get out of random stuck situations
+Worked on a more efficient way to change the platform sprite as the score of the player reaches a certain value,
+but the hitbox bug is still an issue.
 
 **********Features
-Varied powerups
+Changing platforms as score increases
+different background and player sprite
 
 ********Currently Working On....
-Getting new sprites for platforms and setting the score at which they begin to appear
+Fixing platform bug, fixing powerups bugs,
+Working on adding more types of platforms (need to fix platform bug before this can be done)
 
 
 '''
@@ -31,6 +33,7 @@ import random
 from settings import *
 from sprites import *
 from os import path
+
 
 class Game:
     def __init__(self):
@@ -65,6 +68,7 @@ class Game:
                 print("exception")
         # load spritesheet image
         self.spritesheet = Spritesheet(path.join(img_dir, SPRITESHEET)) 
+        self.spritesheet4 = Spritesheet(path.join(img_dir, SPRITESHEET4))
         self.spritesheet3 = Spritesheet(path.join(img_dir, SPRITESHEET3))
         #load cloud images
         self.cloud_images = []
@@ -73,7 +77,7 @@ class Game:
         # load sounds
         # great place for creating sounds: https://www.bfxr.net/
         self.snd_dir = path.join(self.dir, 'snd')
-        self.jump_sound = [pg.mixer.Sound(path.join(self.snd_dir, 'Jump18.wav')),
+        self.jump_sound =  [pg.mixer.Sound(path.join(self.snd_dir, 'Jump18.wav')),
                             pg.mixer.Sound(path.join(self.snd_dir, 'Jump24.wav'))]
         self.boost_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump29.wav'))
         self.head_jump_sound = pg.mixer.Sound(path.join(self.snd_dir, 'Jump39.wav'))
@@ -81,7 +85,6 @@ class Game:
         self.score = 0
         # add all sprites to the pg group
         # below no longer needed - using LayeredUpdate group
-        # self.all_sprites = pg.sprite.Group()
         self.all_sprites = pg.sprite.LayeredUpdates()
         # create platforms group
         self.platforms = pg.sprite.Group()
@@ -89,22 +92,17 @@ class Game:
         self.clouds = pg.sprite.Group()
         # add powerups
         self.powerups = pg.sprite.Group()
-        
         self.mob_timer = 0
         # add a player 1 to the group
         self.player = Player(self)
         # add mobs
         self.mobs = pg.sprite.Group()
         # no longer needed after passing self.groups in Sprites library file
-        # self.all_sprites.add(self.player)
         # instantiate new platform 
         for plat in PLATFORM_LIST:
             # no longer need to assign to variable because we're passing self.groups in Sprite library
-            # p = Platform(self, *plat)
             Platform(self, *plat)
             # no longer needed because we pass in Sprite lib file
-            # self.all_sprites.add(p)
-            # self.platforms.add(p)
         for i in range(8):
             c = Cloud(self)
             c.rect.y += 500
@@ -126,7 +124,6 @@ class Game:
         pg.mixer.music.fadeout(1000)
     def update(self):
         self.all_sprites.update()
-        
         # shall we spawn a mob?
         now = pg.time.get_ticks()
         if now - self.mob_timer > 5000 + random.choice([-1000, -500, 0, 500, 1000]):
@@ -148,7 +145,7 @@ class Game:
                 print("player is " + str(self.player.pos.y))
                 print("mob is " + str(mob_hits[0].rect_top))
                 self.playing = False
-
+        # plat_hits = pg.sprite.spritecollide(self.player, self.platforms, False, pg.sprite.collide_mask)
         # check to see if player can jump - if falling
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
@@ -189,6 +186,7 @@ class Game:
                     self.score += 10
         # if player hits a power up
         pow_hits = pg.sprite.spritecollide(self.player, self.powerups, True)
+        # Setting the boss for powerups
         for pow in pow_hits:
             if pow.type == 'boost':
                 self.boost_sound.play()
@@ -213,7 +211,7 @@ class Game:
             # p = Platform(self, random.randrange(0,WIDTH-width), 
             #                 random.randrange(-75, -30))
             Platform(self, random.randrange(0,WIDTH-width), 
-                            random.randrange(-75, -30))
+                            random.randrange(-75, -30)) 
             # self.platforms.add(p)
             # self.all_sprites.add(p)
     def events(self):
@@ -225,12 +223,14 @@ class Game:
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:
                         self.player.jump()
+                        for plat in self.platforms:
+                            print("the plat level is " + str(plat.platform_level))
                 if event.type == pg.KEYUP:
                     if event.key == pg.K_SPACE:
                         """ # cuts the jump short if the space bar is released """
                         self.player.jump_cut()
     def draw(self):
-        self.screen.fill(SKY_BLUE)
+        self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         """ # not needed now that we're using LayeredUpdates """
         # self.screen.blit(self.player.image, self.player.rect)

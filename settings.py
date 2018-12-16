@@ -1,4 +1,4 @@
-TITLE = "jumpy"
+TITLE = "Space Cyclops"
 # screen dims
 WIDTH = 480
 HEIGHT = 600
@@ -9,6 +9,7 @@ WHITE = (255, 255, 255)
 BLACK = (0,0,0)
 REDDISH = (240,55,66)
 SKY_BLUE = (143, 185, 252)
+PINKISH = (243, 193, 255)
 FONT_NAME = 'arial'
 SPRITESHEET = "spritesheet_jumper.png"
 SPRITESHEET2 = "spritesheet.png"
@@ -24,7 +25,7 @@ PLAYER_JUMP = 20
 # game settings
 BOOST_POWER = 60
 POW_SPAWN_PCT = 7
-MOB_FREQ = 500
+MOB_FREQ = 1000
 # layers - uses numerical value in layered sprites
 PLAYER_LAYER = 2
 PLATFORM_LAYER = 1

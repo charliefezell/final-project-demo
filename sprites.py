@@ -46,20 +46,20 @@ class Player(Sprite):
         self.acc = vec(0, 0)
         print("adding vecs " + str(self.vel + self.acc))
     def load_images(self):
-        self.standing_frames = [self.game.spritesheet.get_image(690, 406, 120, 201),
-                                self.game.spritesheet.get_image(614, 1063, 120, 191)
+        self.standing_frames = [self.game.spritesheet4.get_image(67, 196, 66, 92),
+                                self.game.spritesheet4.get_image(0, 196, 66, 92)
                                 ]
         for frame in self.standing_frames:
             frame.set_colorkey(BLACK)
-        self.walk_frames_r = [self.game.spritesheet.get_image(678, 860, 120, 201),
-                                self.game.spritesheet.get_image(692, 1458, 120, 207)
+        self.walk_frames_r = [self.game.spritesheet4.get_image(146, 0, 72, 97),
+                                self.game.spritesheet4.get_image(219, 0, 72, 97)
                                 ]
         '''setup left frames by flipping and appending them into an empty list'''
         self.walk_frames_l = []
         for frame in self.walk_frames_r:
             frame.set_colorkey(BLACK)
             self.walk_frames_l.append(pg.transform.flip(frame, True, False))
-        self.jump_frame = self.game.spritesheet.get_image(382, 763, 150, 181)
+        self.jump_frame = self.game.spritesheet4.get_image(438, 93, 67, 94)
         self.jump_frame.set_colorkey(BLACK)
     def update(self):
         self.animate()
@@ -135,7 +135,7 @@ class Player(Sprite):
         # checks state
         if not self.jumping and not self.walking:
             # gets current delta time and checks against 200 miliseconds
-            if now - self.last_update > 200:
+            if now - self.last_update > 500:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
                 # reset bottom for each frame of animation
@@ -176,25 +176,30 @@ class Platform(Sprite):
         self.groups = game.all_sprites, game.platforms
         Sprite.__init__(self, self.groups)
         self.game = game
-        images = [self.game.spritesheet.get_image(0, 288, 380, 94), 
+        self.ground = [self.game.spritesheet.get_image(0, 288, 380, 94), 
                   self.game.spritesheet.get_image(213, 1662, 201, 100)]
-        self.image = random.choice(images)
+        self.rock = [self.game.spritesheet3.get_image(576, 792, 70, 70)]
+        self.image = random.choice(self.ground)
         self.image.set_colorkey(BLACK)
-        '''leftovers from random rectangles before images'''
-        # self.image = pg.Surface((w,h))
-        # self.image.fill(WHITE)
+        self.type = 'grass'
+        self.type_options = ['grass', 'rock']
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        if random.randrange(100) < POW_SPAWN_PCT:
-            Pow(self.game, self)
-        if score > 100:
-            images = [self.game.spritesheet3.get_image(576, 792, 70, 70)]
-            self.image = random.choice(images)
+        self.platform_level = game.score
+    def update(self):
+        if self.game.score > 200:
+            self.type = 'rock'
+            self.image = random.choice(self.rock)
             self.image.set_colorkey(BLACK)
-            self.rect = self.image.get_rect()
-            self.rect.x = x
-            self.rect.y = y
+            print(self.type)
+        else:
+            self.type = 'grass'
+            print(self.type)
+        #     self.rect.y = y    
+
+        if random.randrange(100) < POW_SPAWN_PCT:
+            Pow(self.game, self)  
 class Pow(Sprite):
     def __init__(self, game, plat):
         # allows layering in LayeredUpdates sprite group
