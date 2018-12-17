@@ -46,11 +46,13 @@ class Player(Sprite):
         self.acc = vec(0, 0)
         print("adding vecs " + str(self.vel + self.acc))
     def load_images(self):
+        # New standing frames for the new character model
         self.standing_frames = [self.game.spritesheet4.get_image(67, 196, 66, 92),
                                 self.game.spritesheet4.get_image(0, 196, 66, 92)
                                 ]
         for frame in self.standing_frames:
             frame.set_colorkey(BLACK)
+        # New walking frames for the new character model
         self.walk_frames_r = [self.game.spritesheet4.get_image(146, 0, 72, 97),
                                 self.game.spritesheet4.get_image(219, 0, 72, 97)
                                 ]
@@ -59,14 +61,12 @@ class Player(Sprite):
         for frame in self.walk_frames_r:
             frame.set_colorkey(BLACK)
             self.walk_frames_l.append(pg.transform.flip(frame, True, False))
+        # New jump frames for the new character model
         self.jump_frame = self.game.spritesheet4.get_image(438, 93, 67, 94)
         self.jump_frame.set_colorkey(BLACK)
     def update(self):
         self.animate()
         self.acc = vec(0, PLAYER_GRAV)
-        # print("acc " + str(self.acc))
-        # print("vel " + str(self.vel))
-
         keys = pg.key.get_pressed()
         if keys[pg.K_a]:
             self.acc.x =  -PLAYER_ACC
@@ -176,30 +176,37 @@ class Platform(Sprite):
         self.groups = game.all_sprites, game.platforms
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.ground = [self.game.spritesheet.get_image(0, 288, 380, 94), 
+        self.grass = [self.game.spritesheet.get_image(0, 288, 380, 94), 
                   self.game.spritesheet.get_image(213, 1662, 201, 100)]
         self.rock = [self.game.spritesheet3.get_image(576, 792, 70, 70)]
-        self.image = random.choice(self.ground)
+        self.image = random.choice(self.grass)
         self.image.set_colorkey(BLACK)
         self.type = 'grass'
+        # Setting type options for platforms so __init__ can choose the correct sprite to use
         self.type_options = ['grass', 'rock']
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.platform_level = game.score
     def update(self):
-        if self.game.score > 200:
+        # Creating the parameters for when to begin generating 'rock' platforms rather than 'grass' platforms
+        if self.game.score > 400:
             self.type = 'rock'
             self.image = random.choice(self.rock)
             self.image.set_colorkey(BLACK)
             print(self.type)
         else:
+            # If the game score is not greater than 400, 'grass' platforms will spawn
             self.type = 'grass'
             print(self.type)
         #     self.rect.y = y    
-
-        if random.randrange(100) < POW_SPAWN_PCT:
-            Pow(self.game, self)  
+# Some of my trials to get 'rock' platforms to work properly :(
+        # if random.randrange(100) < POW_SPAWN_PCT:
+        #     Pow(self.game, self)
+        # if random.random() > 0.9:
+        #     pow = Pow(hits.rect.center)
+        #     all_sprites.add(pow)
+        #     powerups.add(pow)
 class Pow(Sprite):
     def __init__(self, game, plat):
         # allows layering in LayeredUpdates sprite group

@@ -1,5 +1,9 @@
 # this file was created by Charlie Fezell
 # Sources: goo.gl/2KMivS 
+# Teaching and code from Chris Cozort
+# Kids Can Code website and videos
+# Stackoverflow website
+
 # now available in github
 
 '''
@@ -20,7 +24,7 @@ but the hitbox bug is still an issue.
 
 **********Features
 Changing platforms as score increases
-different background and player sprite
+different background and player sprites
 
 ********Currently Working On....
 Fixing platform bug, fixing powerups bugs,
@@ -34,7 +38,7 @@ from settings import *
 from sprites import *
 from os import path
 
-
+# Creation of the very-important Game class!
 class Game:
     def __init__(self):
         #init game window
@@ -122,6 +126,7 @@ class Game:
             self.update()
             self.draw()
         pg.mixer.music.fadeout(1000)
+    # The 'update' method stores the componenets of the game that are set to change during the gameplay
     def update(self):
         self.all_sprites.update()
         # shall we spawn a mob?
@@ -145,7 +150,6 @@ class Game:
                 print("player is " + str(self.player.pos.y))
                 print("mob is " + str(mob_hits[0].rect_top))
                 self.playing = False
-        # plat_hits = pg.sprite.spritecollide(self.player, self.platforms, False, pg.sprite.collide_mask)
         # check to see if player can jump - if falling
         if self.player.vel.y > 0:
             hits = pg.sprite.spritecollide(self.player, self.platforms, False)
@@ -162,7 +166,7 @@ class Game:
                         self.player.pos.y = find_lowest.rect.top
                         self.player.vel.y = 0
                         self.player.jumping = False
-                
+                 
         # if player reaches top 1/4 of screen...
         if self.player.rect.top <= HEIGHT / 4:
             # spawn a cloud
@@ -230,10 +234,11 @@ class Game:
                         """ # cuts the jump short if the space bar is released """
                         self.player.jump_cut()
     def draw(self):
+        # New background color to better match the 'space' title
+        # I do realize that grass platforms aren't possible in space, but I guess cyclops aren't exactly realistic either
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         """ # not needed now that we're using LayeredUpdates """
-        # self.screen.blit(self.player.image, self.player.rect)
         self.draw_text(str(self.score), 22, WHITE, WIDTH / 2, 15)
         # double buffering - renders a frame "behind" the displayed frame
         pg.display.flip()

@@ -1,16 +1,18 @@
+#My very fun and cool name (Its because the character looks like a cyclops with a cartoon-like space helmet)
 TITLE = "Space Cyclops"
 # screen dims
 WIDTH = 480
-HEIGHT = 600
+HEIGHT =  600
 # frames per second
 FPS = 60
-# colors
+# colors!
 WHITE = (255, 255, 255)
 BLACK = (0,0,0)
 REDDISH = (240,55,66)
 SKY_BLUE = (143, 185, 252)
 PINKISH = (243, 193, 255)
 FONT_NAME = 'arial'
+# Additional spritesheets to add more sprites
 SPRITESHEET = "spritesheet_jumper.png"
 SPRITESHEET2 = "spritesheet.png"
 SPRITESHEET3 = "tiles_spritesheet.png"
